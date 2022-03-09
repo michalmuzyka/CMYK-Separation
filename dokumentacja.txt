@@ -1,0 +1,1 @@
+Program obsługuje się tylko i wyłącznie lewym przyciskiem myszy.

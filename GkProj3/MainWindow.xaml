@@ -1,0 +1,176 @@
+﻿<Window x:Class="GkProj3.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GkProj3"
+        mc:Ignorable="d"
+        Title="Separacja CMYK"  MinHeight="720" MinWidth="1720" WindowStartupLocation="CenterScreen" Background="#282828" ResizeMode="NoResize" Loaded="Window_Loaded">
+
+    <Window.Resources>
+        <SolidColorBrush x:Key="secondaryColor" Color="#505050"/>
+        <SolidColorBrush x:Key="primaryColor" Color="#282828" />
+        <SolidColorBrush x:Key="elementColor" Color="#A2A2A2" />
+        <SolidColorBrush x:Key="pressedColor" Color="#202020" />
+
+        <Style TargetType="{x:Type Border}">
+            <Setter Property="BorderBrush" Value="{StaticResource secondaryColor}"/>
+            <Setter Property="BorderThickness" Value="0.1"/>
+        </Style>
+
+        <Style TargetType="{x:Type TextBlock}">
+            <Setter Property="Foreground" Value="{StaticResource elementColor}"/>
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style TargetType="{x:Type RadioButton}">
+            <Setter Property="Foreground" Value="{StaticResource elementColor}"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="2 6"/>
+        </Style>
+
+        <Style TargetType="{x:Type CheckBox}">
+            <Setter Property="Foreground" Value="{StaticResource elementColor}"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="2 6"/>
+        </Style>
+
+        <Style TargetType="{x:Type GroupBox}">
+            <Setter Property="Foreground" Value="{StaticResource elementColor}"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="BorderBrush" Value="{StaticResource secondaryColor}"/>
+            <Setter Property="BorderThickness" Value="0.1"/>
+            <Setter Property="Margin" Value="5"/>
+        </Style>
+
+        <Style TargetType="{x:Type Button}">
+            <Setter Property="Background" Value="{StaticResource primaryColor}"/>
+            <Setter Property="Foreground" Value="{StaticResource elementColor}"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="2 6"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border BorderThickness="2" BorderBrush="{StaticResource secondaryColor}">
+                            <Border Background="{TemplateBinding Background}">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="3"/>
+                            </Border>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource secondaryColor}"/>
+                </Trigger>
+
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="{StaticResource pressedColor}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.2*" />
+            <ColumnDefinition Width="0.2*"/>
+            <ColumnDefinition Width="0.4*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.05*" />
+            <RowDefinition Height="0.45*" />
+            <RowDefinition Height="0.45*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock DockPanel.Dock="Top" Margin="5" Text="Krzywe szarości:"/>
+        <Border Grid.Row="1" Margin="5" BorderThickness="1" Padding="5">
+            <Canvas ClipToBounds="True" Background="{StaticResource elementColor}" Name="BezierCanvas" MouseLeftButtonDown="BezierCanvas_MouseLeftButtonDown" MouseLeftButtonUp="BezierCanvas_MouseLeftButtonUp" MouseMove="BezierCanvas_MouseMove" Margin="70,22,70,22" />
+        </Border>
+
+        <TextBlock  Grid.Column="1" DockPanel.Dock="Top" Margin="5" Text="Załadowany obrazek:"/>
+        <Border Grid.Row="1" Grid.Column="1" Margin="5" BorderThickness="1" Padding="5">
+            <Image  Name="MainImage" Stretch="Uniform"/>
+        </Border>
+
+        <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="5" BorderThickness="1" Padding="5">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <GroupBox Header="Wybór krzywej">
+                    <StackPanel>
+                        <RadioButton IsChecked="True" GroupName="curves" Click="CyanCurveSelected_OnClick"> Cyan </RadioButton>
+                        <RadioButton GroupName="curves" Click="MagentaCurveSelected_OnClick"> Magenta </RadioButton>
+                        <RadioButton GroupName="curves" Click="YellowCurveSelected_OnClick"> Yellow </RadioButton>
+                        <RadioButton GroupName="curves" Click="BlackCurveSelected_OnClick"> Key (Black) </RadioButton>
+                        <CheckBox IsChecked="True" Name="DrawAll"  Click="ShowAllCurvesClicked_OnClick"> Wyświetl wszystkie krzywe </CheckBox>
+                    </StackPanel>
+                </GroupBox>
+
+                <GroupBox Grid.Column="1" Header="Cofnięcia">
+                    <StackPanel>
+                        <Button Click="Withdraw0PercentButton_OnClick"> 0% Cofnięcia </Button>
+                        <Button Click="Withdraw100PercentButton_OnClick"> 100% Cofnięcia </Button>
+                        <Button Click="WithdrawUCRPercentButton_OnClick"> UCR </Button>
+                        <Button Click="WithdrawGCRPercentButton_OnClick"> GCR </Button>
+                    </StackPanel>
+                </GroupBox>
+
+                <GroupBox Grid.Column="2" Header="Obsługa programu">
+                    <StackPanel>
+                        <Button Click="PresentPhotosButton_OnClick">Wyświetl pełny rozmiar</Button>
+                        <Button Click="LoadPhotoButton_OnClick">Zmień zdjęcie</Button>
+                        <Button Click="SaveCurvesButton_OnClick">Zapisz krzywe</Button>
+                        <Button Click="LoadCurvesButton_OnClick">Wczytaj krzywe</Button>
+                    </StackPanel>
+                </GroupBox>
+
+                <GroupBox Grid.Column="3" Header="Algorytm popularnościowy">
+                    <StackPanel>
+                        <CheckBox IsChecked="False" Name="PopularityAlgCheck"  Click="PopularityAlgorithm_OnClick">Redukuj kolory</CheckBox>
+                        <TextBlock Margin="5"> Wartość parametru k:</TextBlock>
+                        <Slider Name="PopularityKSlider" Minimum="5" Value="8"  Maximum="100" Margin="5" IsMoveToPointEnabled="True" TickFrequency="1" ValueChanged="k_ValueChanged" SmallChange="1" IsSnapToTickEnabled="True"/>
+                    </StackPanel>
+                </GroupBox>
+
+            </Grid>
+        </Border>
+
+        <TextBlock Grid.Column="3" DockPanel.Dock="Top" Text="Podgląd separacji kolorów:" Margin="5"/>
+        <Border Grid.Row="1" Grid.Column="2" Grid.RowSpan="2" Margin="5" BorderThickness="1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <Border Grid.Row="0" Grid.Column="0" Margin="0 0 5 5" Padding="5" BorderThickness="0 0  0.5 0.5" Name="PanelBorder">
+                    <Image Name="CyanSep" Stretch="Uniform"/>
+                </Border>
+                <Border Grid.Row="0" Grid.Column="1" Margin="5 0 0 5" Padding="5" BorderThickness="0.5 0  0 0.5">
+                    <Image Name="MagentaSep" Stretch="Uniform"/>
+                </Border>
+                <Border Grid.Row="1" Grid.Column="0" Margin="0 5 5  0" Padding="5" BorderThickness="0 0.5  0.5 0">
+                    <Image Name="YellowSep" Stretch="Uniform"/>
+                </Border>
+                <Border Grid.Row="1" Grid.Column="1" Margin="5 5 0 0" Padding="5" BorderThickness="0.5 0.5  0 0">
+                    <Image Name="BlackSep" Stretch="Uniform"/>
+                </Border>
+            </Grid>
+        </Border>
+    </Grid> 
+ 
+</Window>
